@@ -31,4 +31,4 @@ build/
 .vscode/
 
 #h2db
-h2db.*
+src/main/resources/db/h2db.*
