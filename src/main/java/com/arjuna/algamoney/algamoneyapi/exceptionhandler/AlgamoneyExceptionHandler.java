@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,57 +15,67 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
 public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
-    
-    @Autowired
-    private MessageSource messageSource;
-    
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-            HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String userMessage = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
-        String devMessage = ex.getCause().getMessage();
-        List<Erro> erros = Arrays.asList(new Erro(userMessage, devMessage));
-        return handleExceptionInternal(ex, erros, headers, 
-                HttpStatus.BAD_REQUEST, request);
+
+  @Autowired
+  private MessageSource messageSource;
+
+  @Override
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
+      HttpStatus status, WebRequest request) {
+    String userMessage = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
+    String devMessage = ex.getCause().getMessage();
+    List<Erro> erros = Arrays.asList(new Erro(userMessage, devMessage));
+    return handleExceptionInternal(ex, erros, headers, HttpStatus.BAD_REQUEST, request);
+  }
+
+  @ExceptionHandler({ EmptyResultDataAccessException.class })
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  protected ResponseEntity<Object> handleEmptyResultDataAcessException(EmptyResultDataAccessException e, WebRequest request) {
+    String userMessage = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
+    String devMessage = e.getMessage();
+    List<Erro> erros = Arrays.asList(new Erro(userMessage, devMessage));
+    return handleExceptionInternal(e, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+      HttpStatus status, WebRequest request) {
+    List<Erro> erros = getErrorList(ex.getBindingResult());
+    return handleExceptionInternal(ex, erros, headers, HttpStatus.BAD_REQUEST, request);
+  }
+
+  private List<Erro> getErrorList(BindingResult bindingResult) {
+    List<Erro> erros = new ArrayList<>();
+    for (FieldError field : bindingResult.getFieldErrors()) {
+      String userMessage = messageSource.getMessage(field, LocaleContextHolder.getLocale());
+      String devMessage = field.toString();
+      erros.add(new Erro(userMessage, devMessage));
+    }
+    return erros;
+  }
+
+  public static class Erro {
+    private String userMessage;
+    private String devMessage;
+
+    public Erro(String userMessage, String devMessage) {
+      this.devMessage = devMessage;
+      this.userMessage = userMessage;
     }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, 
-            HttpHeaders headers, HttpStatus status, WebRequest request) {
-        List<Erro> erros = getErrorList(ex.getBindingResult());
-        return handleExceptionInternal(ex, erros, headers, HttpStatus.BAD_REQUEST, request);
+    public String getUserMessage() {
+      return userMessage;
     }
-    
-    private List<Erro> getErrorList(BindingResult bindingResult) {
-        List<Erro> erros = new ArrayList<>();
-        for (FieldError field : bindingResult.getFieldErrors()){
-            String userMessage = messageSource.getMessage(field, LocaleContextHolder.getLocale());
-            String devMessage = field.toString();
-            erros.add(new Erro(userMessage, devMessage));
-        }
-        return erros;
-    }
-    
-    public static class Erro {
-        private String userMessage;
-        private String devMessage;
-        
-        public Erro(String userMessage, String devMessage){
-            this.devMessage = devMessage;
-            this.userMessage = userMessage;
-        }
 
-        public String getUserMessage() {
-            return userMessage;
-        }
-        
-        public String getDevMessage() {
-            return devMessage;
-        }
+    public String getDevMessage() {
+      return devMessage;
     }
+  }
 }
