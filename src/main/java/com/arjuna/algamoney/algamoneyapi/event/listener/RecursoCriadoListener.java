@@ -7,8 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.arjuna.algamoney.algamoneyapi.event.RecursoCriadoEvent;
 
 import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+@Component
 public class RecursoCriadoListener implements ApplicationListener<RecursoCriadoEvent> {
 
   @Override
