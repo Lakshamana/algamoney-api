@@ -1,7 +1,7 @@
 CREATE TABLE pessoa(
     codigo BIGINT(20) PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(50) NOT NULL,
-    ativo TINYINT(1) NOT NULL,
+    ativo TINYINT(1) not null,
     logradouro VARCHAR(70),
     numero VARCHAR(4),
     complemento VARCHAR(30),

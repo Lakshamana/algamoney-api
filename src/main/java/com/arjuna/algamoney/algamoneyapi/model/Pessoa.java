@@ -1,6 +1,5 @@
 package com.arjuna.algamoney.algamoneyapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +10,6 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "pessoa")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Pessoa {
     
     @Id
@@ -22,7 +20,7 @@ public class Pessoa {
     private String nome;
     
     @NotNull
-    private boolean ativo;
+    private Boolean ativo;
     
     @Embedded
     private Endereco endereco;
@@ -43,11 +41,11 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public boolean isAtivo() {
+    public Boolean isAtivo() {
         return ativo;
     }
 
-    public void setAtivo(boolean ativo) {
+    public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
     }
 
