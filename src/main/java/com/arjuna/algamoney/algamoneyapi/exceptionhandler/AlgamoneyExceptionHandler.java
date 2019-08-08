@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,11 +39,21 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({ EmptyResultDataAccessException.class })
-  protected ResponseEntity<Object> handleEmptyResultDataAcessException(EmptyResultDataAccessException e, WebRequest request) {
+  protected ResponseEntity<Object> handleEmptyResultDataAcessException(EmptyResultDataAccessException e,
+      WebRequest request) {
     String userMessage = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
     String devMessage = e.getMessage();
     List<Erro> erros = Arrays.asList(new Erro(userMessage, devMessage));
     return handleExceptionInternal(e, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+  }
+
+  @ExceptionHandler({ DataIntegrityViolationException.class })
+  protected ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e,
+      WebRequest request) {
+    String userMessage = messageSource.getMessage("recurso.operacao-invalida", null, LocaleContextHolder.getLocale());
+    String devMessage = ExceptionUtils.getRootCauseMessage(e);
+    List<Erro> erros = Arrays.asList(new Erro(userMessage, devMessage));
+    return handleExceptionInternal(e, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
   }
 
   @Override
@@ -52,14 +64,11 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   private List<Erro> getErrorList(BindingResult bindingResult) {
-    List<Erro> erros = bindingResult.getFieldErrors()
-      .stream()
-      .map(field -> {
-        String userMessage = messageSource.getMessage(field, LocaleContextHolder.getLocale());
-        String devMessage = field.toString();
-        return new Erro(userMessage, devMessage);
-      })
-      .collect(Collectors.toList());
+    List<Erro> erros = bindingResult.getFieldErrors().stream().map(field -> {
+      String userMessage = messageSource.getMessage(field, LocaleContextHolder.getLocale());
+      String devMessage = field.toString();
+      return new Erro(userMessage, devMessage);
+    }).collect(Collectors.toList());
     return erros;
   }
 
