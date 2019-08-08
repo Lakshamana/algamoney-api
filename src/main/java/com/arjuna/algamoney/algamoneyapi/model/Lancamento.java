@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "lancamento")
@@ -23,25 +24,32 @@ public class Lancamento {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long codigo;
 
+  @NotNull
   private String descricao;
 
-  @Column(name = "data_lancamento")
-  private LocalDate dataLancamento;
+  @NotNull
+  @Column(name = "data_pagamento")
+  private LocalDate dataPagamento;
 
+  @NotNull
   @Column(name = "data_vencimento")
   private LocalDate dataVencimento;
 
+  @NotNull
   private BigDecimal valor;
 
   private String observacao;
 
+  @NotNull
   @Enumerated(EnumType.STRING)
   private TipoLancamento tipo;
 
+  @NotNull
   @ManyToOne
   @JoinColumn(name = "codigo_pessoa")
   private Pessoa pessoa;
 
+  @NotNull
   @ManyToOne
   @JoinColumn(name = "codigo_categoria")
   private Categoria categoria;
@@ -102,12 +110,12 @@ public class Lancamento {
     this.descricao = descricao;
   }
 
-  public LocalDate getDataLancamento() {
-    return this.dataLancamento;
+  public LocalDate getDataPagamento() {
+    return this.dataPagamento;
   }
 
-  public void setDataLancamento(LocalDate dataLancamento) {
-    this.dataLancamento = dataLancamento;
+  public void getDataPagamento(LocalDate dataPagamento) {
+    this.dataPagamento = dataPagamento;
   }
 
   public LocalDate getDataVencimento() {

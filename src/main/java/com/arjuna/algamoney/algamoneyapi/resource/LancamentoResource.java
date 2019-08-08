@@ -3,6 +3,7 @@ package com.arjuna.algamoney.algamoneyapi.resource;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import com.arjuna.algamoney.algamoneyapi.event.RecursoCriadoEvent;
 import com.arjuna.algamoney.algamoneyapi.model.Lancamento;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,7 +42,7 @@ public class LancamentoResource {
   }
 
   @PostMapping
-  public ResponseEntity<Lancamento> createLancamento(@RequestBody Lancamento lancamento, HttpServletResponse response) {
+  public ResponseEntity<Lancamento> createLancamento(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
     Lancamento lancamentoSalvo = lancamentoRepository.save(lancamento);
     publisher.publishEvent(new RecursoCriadoEvent(this, response, lancamentoSalvo.getCodigo()));
     return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
