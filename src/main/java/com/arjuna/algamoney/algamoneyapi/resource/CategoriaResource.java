@@ -1,7 +1,7 @@
 package com.arjuna.algamoney.algamoneyapi.resource;
 
-import java.net.URI;
 import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/categorias")
@@ -39,12 +38,12 @@ public class CategoriaResource {
   }
 
   @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria c, HttpServletResponse response){
-      Categoria categoriaSalva = repository.save(c);
-      publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
-      return ResponseEntity.status(HttpStatus.CREATED).body(c);
-    }
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria c, HttpServletResponse response) {
+    Categoria categoriaSalva = repository.save(c);
+    publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
+    return ResponseEntity.status(HttpStatus.CREATED).body(c);
+  }
 
   @GetMapping("/{codigo}")
   public ResponseEntity<Categoria> buscarPorCodigo(@PathVariable Long codigo) {
