@@ -27,7 +27,6 @@ public class Lancamento {
   @NotNull
   private String descricao;
 
-  @NotNull
   @Column(name = "data_pagamento")
   private LocalDate dataPagamento;
 
