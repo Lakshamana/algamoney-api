@@ -1,4 +1,4 @@
-package com.arjuna.algamoney.algamoneyapi.repository.query;
+package com.arjuna.algamoney.algamoneyapi.repository.lancamento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,18 +37,28 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
   private Predicate[] criarRestricoes(LancamentoFilter filter, CriteriaBuilder builder, Root<Lancamento> root) {
     List<Predicate> predicates = new ArrayList<>();
     if (!StringUtils.isEmpty(filter.getDescricao())) {
-      predicates.add(builder.like(
-        builder.lower(root.get(Lancamento_.descricao)),
-        "%" + filter.getDescricao().toLowerCase() + "%"
-      ));
+      predicates.add(
+        builder.like(
+          builder.lower(root.get(Lancamento_.descricao)),
+          "%" + filter.getDescricao().toLowerCase() + "%"
+        )
+      );
     }
 
     if (filter.getDataVencimentoDe() != null) {
-      predicates.add(null);
+      predicates.add(
+        builder.greaterThanOrEqualTo(
+          root.get(Lancamento_.dataVencimento), filter.getDataVencimentoDe()
+        )
+      );
     }
 
     if (filter.getDataVencimentoAte() != null) {
-      predicates.add(null);
+      predicates.add(
+        builder.lessThanOrEqualTo(
+          root.get(Lancamento_.dataVencimento), filter.getDataVencimentoAte()
+        )
+      );
     }
     return predicates.toArray(new Predicate[predicates.size()]);
   }

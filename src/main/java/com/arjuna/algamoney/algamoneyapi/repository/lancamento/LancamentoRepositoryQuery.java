@@ -1,4 +1,4 @@
-package com.arjuna.algamoney.algamoneyapi.repository.query;
+package com.arjuna.algamoney.algamoneyapi.repository.lancamento;
 
 import java.util.List;
 
