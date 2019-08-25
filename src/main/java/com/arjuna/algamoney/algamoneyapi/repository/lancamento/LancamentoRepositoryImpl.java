@@ -60,7 +60,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
     int currentPage = pageable.getPageNumber();
     int pageSize = pageable.getPageSize();
     int firstRegister = currentPage * pageSize;
-    
+
     query.setFirstResult(firstRegister);
     query.setMaxResults(pageSize);
   }
