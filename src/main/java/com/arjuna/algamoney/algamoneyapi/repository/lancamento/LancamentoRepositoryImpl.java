@@ -76,4 +76,9 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
     return manager.createQuery(criteria).getSingleResult();
   }
+
+  @Override
+  public EntityManager getPersistenceContext() {
+    return this.manager;
+  }
 }
